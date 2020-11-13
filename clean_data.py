@@ -17,7 +17,8 @@ def rm_ext_and_nan(CTG_features, extra_feature):
     :return: A dictionary of clean CTG called c_ctg
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:------------------------------
-    c_ctg = CTG_features.drop(extra_feature,axis=1).dropna(how='all')
+    c_ctg = CTG_features.copy()
+    c_ctg.drop(extra_feature,axis=1).dropna(how='all')
     # --------------------------------------------------------------------------
     return c_ctg
 
@@ -31,7 +32,8 @@ def nan2num_samp(CTG_features, extra_feature):
     """
     c_cdf = {}
     # ------------------ IMPLEMENT YOUR CODE HERE:------------------------------
-
+    c_cdf = CTG_features.copy()
+    c_cdf.drop(extra_feature).mask(CTG_features.isnull(), np.random.choice([CTG_features]))
     # -------------------------------------------------------------------------
     return pd.DataFrame(c_cdf)
 
