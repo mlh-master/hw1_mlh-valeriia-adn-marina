@@ -19,9 +19,14 @@ def pred_log(logreg, X_train, y_train, X_test, flag=False):
     :return: A two elements tuple containing the predictions and the weightning matrix
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
-    logreg.fit(X_train,y_train)
-    y_pred_log = logreg.predict(X_test)
-    w_log = logreg.coef_
+    if flag == False:
+        logreg.fit(X_train,y_train)
+        y_pred_log = logreg.predict(X_test)
+        w_log = logreg.coef_
+    else:
+        logreg.fit(X_train, y_train)
+        y_pred_log = logreg.predict_proba(X_test)
+        w_log = logreg.coef_
     # -------------------------------------------------------------------------
     return y_pred_log, w_log
 
@@ -77,6 +82,8 @@ def cv_kfold(X, y, C, penalty, K, mode):
     """
     kf = SKFold(n_splits=K)
     validation_dict = []
+
+    f = {}
     for c in C:
         for p in penalty:
             logreg = LogisticRegression(solver='saga', penalty=p, C=c, max_iter=10000, multi_class='ovr')
@@ -85,6 +92,26 @@ def cv_kfold(X, y, C, penalty, K, mode):
             for train_idx, val_idx in kf.split(X, y):
                 x_train, x_val = X.iloc[train_idx], X.iloc[val_idx]
         # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
+                y_train, y_val = y[train_idx], y[val_idx]
+                v, w = pred_log(logreg,nsd(x_train, mode=mode, flag=False),y_train, nsd(x_val, mode=mode, flag=False), flag = True)
+
+                # print('length y is: {}'.format(y_val))
+                # print(' v is: {}'.format(v[:,0]))
+                # print('length v is: {}'.format(v[:,0].shape[0]))
+                mu = log_loss(y_val, v)
+                X_design = np.hstack([np.ones((x_val.shape[0], 1)), x_val])
+
+                # Initiate matrix of 0's, fill diagonal with each predicted observation's variance
+                V = np.diagflat(np.product(v, axis=1))
+
+                covLogit = np.linalg.inv(np.dot(np.dot(X_design.T, V), X_design))
+                std = np.sqrt(np.diag(covLogit))
+                f['mu'] = mu
+                f['sigma'] = std
+                f['C'] = C
+                f['penalty'] = penalty
+
+                validation_dict.append(f)
 
         # --------------------------------------------------------------------------
     return validation_dict

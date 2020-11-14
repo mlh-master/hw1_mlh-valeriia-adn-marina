@@ -140,13 +140,15 @@ def norm_standard(CTG_features, selected_feat=('LB', 'ASTV'), mode='none', flag=
     if mode == 'mean':
         for i in cc.keys():
             cc[i] = (cc[i] - c[i]['mean'])/(c[i]['max']-c[i]['min'])
-    xlbl = ['beats/min','%']
-    t = [x,y]
-    axarr = cc.hist(column=[x,y], bins=100,layout = (2, 1),figsize=(20, 10))
-    for i,ax in enumerate(axarr.flatten()):
-        ax.set_xlabel(xlbl[i])
-        ax.set_ylabel('count')
-        ax.set_title(t[i])
+    if flag == True:
+        xlbl = ['beats/min','%']
+        t = [x,y]
+        axarr = cc.hist(column=[x,y], bins=100,layout = (2, 1),figsize=(20, 10))
+        for i,ax in enumerate(axarr.flatten()):
+            ax.set_xlabel(xlbl[i])
+            ax.set_ylabel('count')
+            ax.set_title(t[i])
+
     nsd_res = cc
     # -------------------------------------------------------------------------
     return pd.DataFrame(nsd_res)
