@@ -95,23 +95,16 @@ def cv_kfold(X, y, C, penalty, K, mode):
                 y_train, y_val = y[train_idx], y[val_idx]
                 v, w = pred_log(logreg,nsd(x_train, mode=mode, flag=False),y_train, nsd(x_val, mode=mode, flag=False), flag = True)
 
-                # print('length y is: {}'.format(y_val))
-                # print(' v is: {}'.format(v[:,0]))
-                # print('length v is: {}'.format(v[:,0].shape[0]))
-                mu = log_loss(y_val, v)
-                X_design = np.hstack([np.ones((x_val.shape[0], 1)), x_val])
+            k = k + 1
+            mu = log_loss(y_val, v)
 
-                # Initiate matrix of 0's, fill diagonal with each predicted observation's variance
-                V = np.diagflat(np.product(v, axis=1))
+            std = np.std(v)
+            f['mu'] = mu
+            f['sigma'] = std
+            f['C'] = c
+            f['penalty'] = p
 
-                covLogit = np.linalg.inv(np.dot(np.dot(X_design.T, V), X_design))
-                std = np.sqrt(np.diag(covLogit))
-                f['mu'] = mu
-                f['sigma'] = std
-                f['C'] = C
-                f['penalty'] = penalty
-
-                validation_dict.append(f)
+            validation_dict.append(f)
 
         # --------------------------------------------------------------------------
     return validation_dict
