@@ -17,8 +17,7 @@ def rm_ext_and_nan(CTG_features, extra_feature):
     :return: A dictionary of clean CTG called c_ctg
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:------------------------------
-    # c_ctg = CTG_features.copy()
-    # c_ctg.drop(extra_feature,axis=1).dropna(how='all')
+
     c_ctg = CTG_features.copy()
     c_ctg = c_ctg.drop(extra_feature, axis=1)
     c_ctg.loc[:, 'LB':'Tendency'] = c_ctg.loc[:, 'LB':'Tendency'].replace('--', np.nan).replace('#', np.nan).replace(

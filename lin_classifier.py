@@ -94,16 +94,12 @@ def cv_kfold(X, y, C, penalty, K, mode):
         # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
                 y_train, y_val = y[train_idx], y[val_idx]
                 v, w = pred_log(logreg,nsd(x_train, mode=mode, flag=False),y_train, nsd(x_val, mode=mode, flag=False), flag = True)
+                loss_val_vec[k] = log_loss(y_val, v)
+                k += 1
+            mu = loss_val_vec.mean()
 
+            std = loss_val_vec.std()
 
-            mu = log_loss(y_val, v)
-
-            std = np.std(v)
-            f['mu'] = mu
-            f['sigma'] = std
-            f['C'] = c
-            f['penalty'] = p
-            # print(f)
             validation_dict.append({'mu': mu, 'sigma': std, 'C': c, 'penalty': p})
 
         # --------------------------------------------------------------------------
